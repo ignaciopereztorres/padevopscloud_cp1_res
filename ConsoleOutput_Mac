@@ -1,0 +1,162 @@
+Started by user Ignacio Pérez Torres
+
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Get Code)
+[Pipeline] echo
+Get Code from GitHub
+[Pipeline] git
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/ignaciopereztorres/padevopscloud_cp1_res.git # timeout=10
+Fetching upstream changes from https://github.com/ignaciopereztorres/padevopscloud_cp1_res.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.39.5 (Apple Git-154)'
+ > git fetch --tags --force --progress -- https://github.com/ignaciopereztorres/padevopscloud_cp1_res.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision fe586b811930a083aac43b8e7237416e223028a2 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f fe586b811930a083aac43b8e7237416e223028a2 # timeout=10
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master fe586b811930a083aac43b8e7237416e223028a2 # timeout=10
+Commit message: "Cambio localhost por 127.0.0.1"
+ > git rev-list --no-walk fe586b811930a083aac43b8e7237416e223028a2 # timeout=10
+[Pipeline] sh
++ ls -l
+total 48
+-rw-r--r--  1 ignaciopereztorres  staff  1906 Jun 14 14:01 JENKINSFILE
+-rw-r--r--  1 ignaciopereztorres  staff  2533 Jun 14 14:01 JENKINSFILE_agentes
+-rw-r--r--  1 ignaciopereztorres  staff   413 Jun 14 14:01 README.md
+drwxr-xr-x  7 ignaciopereztorres  staff   224 Jun 14 14:01 app
+-rw-r--r--  1 ignaciopereztorres  staff   169 Jun 14 14:01 pytest.ini
+-rw-r--r--  1 ignaciopereztorres  staff   408 Jun 14 16:38 result_rest.xml
+-rw-r--r--  1 ignaciopereztorres  staff  1419 Jun 14 16:37 result_unit.xml
+drwxr-xr-x  6 ignaciopereztorres  staff   192 Jun 14 14:01 test
+[Pipeline] echo
+/Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+No es necesario
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Tests)
+[Pipeline] parallel
+[Pipeline] { (Branch: Unit)
+[Pipeline] { (Branch: Rest)
+[Pipeline] stage
+[Pipeline] { (Unit)
+[Pipeline] stage
+[Pipeline] { (Rest)
+[Pipeline] catchError
+[Pipeline] {
+[Pipeline] catchError
+[Pipeline] {
+[Pipeline] sh
+[Pipeline] sh
++ export PYTHONPATH=/Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
++ PYTHONPATH=/Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
++ pytest --junitxml=result_unit.xml test/unit
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-8.4.0, pluggy-1.6.0
+rootdir: /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
+configfile: pytest.ini
+collected 10 items
+
+test/unit/calc_test.py ........                                          [ 80%]
+test/unit/util_test.py ..                                                [100%]
+
+- generated xml file: /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1/result_unit.xml -
+============================== 10 passed in 0.01s ==============================
+[Pipeline] }
++ export FLASK_APP=app/api.py
++ FLASK_APP=app/api.py
++ nohup flask run
++ ping -c 10 127.0.0.1
++ nohup java -jar /Users/ignaciopereztorres/wiremock-standalone-4.0.0-beta.10.jar --port 9090 --root-dir ./test/wiremock
+PING 127.0.0.1 (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.040 ms
+ * Serving Flask app 'app/api.py'
+ * Debug mode: off
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+[Pipeline] // catchError
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+
+[34m██     ██ ██ ██████  ███████ [33m███    ███  ██████   ██████ ██   ██
+[34m██     ██ ██ ██   ██ ██      [33m████  ████ ██    ██ ██      ██  ██
+[34m██  █  ██ ██ ██████  █████   [33m██ ████ ██ ██    ██ ██      █████
+[34m██ ███ ██ ██ ██   ██ ██      [33m██  ██  ██ ██    ██ ██      ██  ██
+[34m ███ ███  ██ ██   ██ ███████ [33m██      ██  ██████   ██████ ██   ██
+
+[0m----------------------------------------------------------------
+|               Cloud: https://wiremock.io/cloud               |
+|                                                              |
+|               Slack: https://slack.wiremock.org              |
+----------------------------------------------------------------
+
+version:                      4.0.0-beta.10
+port:                         9090
+enable-browser-proxying:      false
+disable-banner:               false
+no-request-journal:           false
+verbose:                      false
+
+extensions:                   http-server-factory-JettyHttpServerFactory,response-template,webhook
+64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.146 ms
+64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.151 ms
+64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.081 ms
+64 bytes from 127.0.0.1: icmp_seq=4 ttl=64 time=0.150 ms
+64 bytes from 127.0.0.1: icmp_seq=5 ttl=64 time=0.118 ms
+64 bytes from 127.0.0.1: icmp_seq=6 ttl=64 time=0.080 ms
+64 bytes from 127.0.0.1: icmp_seq=7 ttl=64 time=0.165 ms
+64 bytes from 127.0.0.1: icmp_seq=8 ttl=64 time=0.139 ms
+64 bytes from 127.0.0.1: icmp_seq=9 ttl=64 time=0.095 ms
+
+--- 127.0.0.1 ping statistics ---
+10 packets transmitted, 10 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 0.040/0.116/0.165/0.039 ms
++ pytest --junitxml=result_rest.xml test/rest
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-8.4.0, pluggy-1.6.0
+rootdir: /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1
+configfile: pytest.ini
+collected 2 items
+
+test/rest/api_test.py 127.0.0.1 - - [14/Jun/2025 16:39:51] "GET /calc/add/1/2 HTTP/1.1" 200 -
+..                                                 [100%]
+
+- generated xml file: /Users/ignaciopereztorres/.jenkins/workspace/P25/Pipeline1/result_rest.xml -
+============================== 2 passed in 0.06s ===============================
+[Pipeline] }
+[Pipeline] // catchError
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Results)
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

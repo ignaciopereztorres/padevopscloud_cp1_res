@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Get Code') {
+            steps {
+                echo 'Get Code from GitHub'
+                git 'https://github.com/ignaciopereztorres/padevopscloud_cp1_res.git'
+                sh 'ls -l'
+                echo WORKSPACE
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'No es necesario'
+            }
+        }
+
+        stage('Tests')
+        {
+            parallel
+            {
+                stage('Unit') {
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            sh '''
+                                export PYTHONPATH=$WORKSPACE
+                                pytest --junitxml=result_unit.xml test/unit
+                            '''
+                        }
+                    }
+                }
+
+                stage('Rest') {
+                    steps {
+                        catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                            sh '''
+                                export FLASK_APP=app/api.py
+                                nohup flask run &
+                                nohup java -jar /Users/ignaciopereztorres/wiremock-standalone-4.0.0-beta.10.jar --port 9090 --root-dir ./test/wiremock &
+                                ping -c 10 127.0.0.1
+                                pytest --junitxml=result_rest.xml test/rest
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage ('Results') {
+            steps {
+                junit 'result*.xml'
+            }
+        }
+
+    }
+}
